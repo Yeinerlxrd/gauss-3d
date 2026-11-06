@@ -1,3 +1,5 @@
 .env
 .env.local
 .env.*.local
+vite.config.js
+vite.config.d.ts

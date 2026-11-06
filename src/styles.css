@@ -62,3 +62,15 @@ nav button,.present,.primary,.ghost,.control-panel,.control-panel label,.segment
 @media(max-width:650px){p{font-size:16px}.lead{font-size:18px}.math-display,.big-formula .math-display{font-size:1.2rem}}
 /* The 3D canvas owns pointer gestures so orbiting also works on touch devices. */
 .field-canvas-3d{touch-action:none;cursor:grab;background:#07111f}.field-canvas-3d:active{cursor:grabbing}
+.explanation-content{margin-top:12px;color:#c5d8d6;font:13px/1.65 'DM Sans',sans-serif;max-height:420px;overflow:auto}
+.explanation-content p{margin:0 0 10px;color:#c5d8d6;font:inherit}
+.explanation-content h4{margin:16px 0 8px;color:#eaf7f4;font:600 16px/1.3 'Space Grotesk',sans-serif}
+.explanation-content hr{border:0;border-top:1px solid #31515a;margin:12px 0}
+.explanation-space{height:4px}
+.explanation-item{display:flex;gap:7px;margin:5px 0;color:#c5d8d6}
+.explanation-item b{color:var(--teal);font-weight:500}
+.explanation-content strong{color:#eaf7f4}
+.explanation-content code{color:var(--orange);font:12px 'DM Mono',monospace}
+.ai-formula{display:block;margin:8px 0;padding:8px 10px;overflow-x:auto;background:#071b25;border-left:2px solid var(--teal);color:#92efe0;font:13px/1.5 'DM Mono',monospace;white-space:nowrap}
+.explanation-table-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:7px 0;border-bottom:1px solid #294752}
+.explanation-table-row span{color:#c5d8d6}

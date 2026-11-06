@@ -17,9 +17,9 @@ async function fetchWithTimeout(url: URL, init: RequestInit, timeoutMs = 15000) 
   }
 }
 
-function geminiApiPlugin(apiKey: string, model: string) {
+function groqApiPlugin(apiKey: string, model: string) {
   return {
-    name: 'gemini-api',
+    name: 'groq-api',
     configureServer(server: ViteDevServer) {
       server.middlewares.use('/api/explain', async (req, res, next) => {
         if (req.method !== 'POST') {
@@ -28,7 +28,7 @@ function geminiApiPlugin(apiKey: string, model: string) {
         }
         if (!apiKey) {
           res.statusCode = 500
-          res.end('GEMINI_API_KEY no está configurada en .env')
+          res.end('GROQ_API_KEY no está configurada en .env')
           return
         }
 
@@ -40,49 +40,47 @@ function geminiApiPlugin(apiKey: string, model: string) {
             return
           }
 
-          const request = {
+          const request: RequestInit = {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + apiKey },
             body: JSON.stringify({
-              systemInstruction: {
-                parts: [{ text: 'Explica ejercicios de divergencia y el teorema de Gauss en español, con pasos matemáticos claros y breves.' }],
-              },
-              contents: [{ parts: [{ text: problem }] }],
-              generationConfig: { temperature: 0.2 },
+              model,
+              messages: [
+                { role: 'system', content: 'Explica ejercicios de divergencia y el teorema de Gauss en español, con pasos matemáticos claros y breves.' },
+                { role: 'user', content: problem },
+              ],
+              temperature: 0.2,
             }),
           }
-          const endpoint = new URL(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`)
-          endpoint.searchParams.set('key', apiKey)
-          const response = await fetchWithTimeout(endpoint, request, 6000)
-
-          if (!response) throw new Error('Gemini no devolvió una respuesta')
+          const endpoint = new URL('https://api.groq.com/openai/v1/chat/completions')
+          const response = await fetchWithTimeout(endpoint, request)
           const responseText = await response.text()
           let data: {
-            candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+            choices?: Array<{ message?: { content?: string } }>
             error?: { message?: string }
           }
           try {
             data = JSON.parse(responseText) as typeof data
           } catch {
             res.statusCode = 502
-            res.end(`Gemini devolvió una respuesta no válida (HTTP ${response.status})`)
+            res.end(`Groq devolvió una respuesta no válida (HTTP ${response.status})`)
             return
           }
           if (!response.ok) {
             res.statusCode = response.status
-            res.end(`Gemini rechazó la solicitud: ${data.error?.message ?? `HTTP ${response.status}`}. Modelo: ${model}`)
+            res.end(`Groq rechazó la solicitud: ${data.error?.message ?? `HTTP ${response.status}`}. Modelo: ${model}`)
             return
           }
 
-          const explanation = data.candidates?.[0]?.content?.parts?.map(part => part.text ?? '').join('').trim()
+          const explanation = data.choices?.[0]?.message?.content?.trim()
           res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ explanation: explanation || 'Gemini no devolvió una explicación' }))
+          res.end(JSON.stringify({ explanation: explanation || 'Groq no devolvió una explicación' }))
         } catch (error) {
           res.statusCode = 500
           const message = error instanceof Error && error.name === 'AbortError'
-            ? 'Gemini tardó más de 15 segundos en responder'
+            ? 'Groq tardó más de 15 segundos en responder'
             : error instanceof Error ? error.message : 'error desconocido'
-          res.end(`No se pudo conectar con Gemini: ${message}`)
+          res.end(`No se pudo conectar con Groq: ${message}`)
         }
       })
     },
@@ -91,10 +89,8 @@ function geminiApiPlugin(apiKey: string, model: string) {
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  const model = (env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash')
-    .replace(/^models\//, '')
-    .replace(/flashs$/, 'flash')
+  const model = env.GROQ_MODEL?.trim() || 'openai/gpt-oss-20b'
   return {
-    plugins: [react(), geminiApiPlugin(env.GEMINI_API_KEY?.trim() ?? '', model)],
+    plugins: [react(), groqApiPlugin(env.GROQ_API_KEY?.trim() ?? '', model)],
   }
 })

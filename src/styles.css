@@ -60,3 +60,5 @@ nav button,.present,.primary,.ghost,.control-panel,.control-panel label,.segment
 .reset-view{width:100%;margin-top:4px;padding:10px;border:1px solid var(--line);background:transparent;color:var(--ink);font:500 12px 'DM Mono';cursor:pointer}
 .reset-view:hover{border-color:var(--teal);color:var(--teal)}
 @media(max-width:650px){p{font-size:16px}.lead{font-size:18px}.math-display,.big-formula .math-display{font-size:1.2rem}}
+/* The 3D canvas owns pointer gestures so orbiting also works on touch devices. */
+.field-canvas-3d{touch-action:none;cursor:grab;background:#07111f}.field-canvas-3d:active{cursor:grabbing}

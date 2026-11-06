@@ -38,9 +38,54 @@
   font-size: 0.45em;
 }
 
+.gauss-equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35em;
+  width: 100%;
+  color: var(--ink);
+  font: 400 clamp(1.7rem, 3.8vw, 3rem)/1.15 'DM Mono', monospace;
+  white-space: nowrap;
+}
+
+.gauss-equation span {
+  white-space: nowrap;
+}
+
+.gauss-equation sub {
+  font-size: 0.45em;
+  vertical-align: -0.45em;
+}
+
+.gauss-equation b {
+  font-weight: 400;
+  color: var(--teal);
+}
+
 @media (max-width: 850px) {
   .math-display {
+    white-space: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+  }
+
+  .big-formula {
+    overflow: visible;
+  }
+
+  .gauss-equation {
+    display: grid;
+    gap: 8px;
+    justify-items: center;
+    font-size: clamp(1.45rem, 7vw, 2.2rem);
     white-space: normal;
+  }
+
+  .gauss-equation b {
+    line-height: 1;
   }
 }
 

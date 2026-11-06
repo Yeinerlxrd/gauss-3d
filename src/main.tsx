@@ -33,7 +33,8 @@ function FieldCanvas({ field, geometry, density, yaw, pitch, zoom, selected, onS
     const ctx = canvas.getContext('2d')!
     let frame = 0
     const draw = (time = 0) => {
-      const w = canvas.clientWidth, h = canvas.clientHeight, dpr = window.devicePixelRatio || 1
+      const w = canvas.clientWidth, h = canvas.clientHeight, dpr = Math.min(window.devicePixelRatio || 1, 2)
+      if (!w || !h) return
       canvas.width = w * dpr; canvas.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, w, h)
       const glow = ctx.createRadialGradient(w * .5, h * .48, 5, w * .5, h * .48, w * .55)
       glow.addColorStop(0, 'rgba(48,212,190,.2)'); glow.addColorStop(1, 'rgba(5,14,27,0)')
@@ -69,8 +70,10 @@ function FieldCanvas({ field, geometry, density, yaw, pitch, zoom, selected, onS
     }
     frame = requestAnimationFrame(draw)
     const resize = () => draw()
+    const observer = new ResizeObserver(resize)
+    observer.observe(canvas)
     window.addEventListener('resize', resize)
-    return () => { cancelAnimationFrame(frame); window.removeEventListener('resize', resize) }
+    return () => { cancelAnimationFrame(frame); observer.disconnect(); window.removeEventListener('resize', resize) }
   }, [field, geometry, density, yaw, pitch, zoom, selected])
   const pointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => { drag.current = { active: true, x: e.clientX, y: e.clientY, startX: e.clientX, startY: e.clientY }; e.currentTarget.setPointerCapture(e.pointerId) }
   const pointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => { if (!drag.current.active) return; onOrbit(e.clientX - drag.current.x, e.clientY - drag.current.y); drag.current.x = e.clientX; drag.current.y = e.clientY }
@@ -128,7 +131,7 @@ function App() {
   const resetView = () => { setYaw(18); setPitch(24); setZoom(1); setSelected(null) }
   const activeExercise = open === null ? null : exercises[open]
   return <div className={presentation ? 'app presentation' : 'app'}>
-    <header className="topbar"><button className="brand" onClick={() => go('inicio')}><span className="brand-mark">∇·</span><span>GAUSS <b>3D</b></span></button><nav>{sections.map((s, i) => <button key={s} className={active === i ? 'active' : ''} onClick={() => go(s)}>{navLabels[i]}</button>)}</nav><button className="present" onClick={() => setPresentation(v => !v)}>{presentation ? 'Salir' : '⛶ Presentar'}</button></header>
+    <header className="topbar"><button className="brand" onClick={() => go('inicio')} aria-label="Ir al inicio"><img src="/gauss-logo.svg" alt="" /><span>GAUSS <b>3D</b></span></button><nav>{sections.map((s, i) => <button key={s} className={active === i ? 'active' : ''} onClick={() => go(s)}>{navLabels[i]}</button>)}</nav><button className="present" onClick={() => setPresentation(v => !v)}>{presentation ? 'Salir' : '⛶ Presentar'}</button></header>
     <main>
       <section id="inicio" className="hero section"><div className="hero-copy"><div className="eyebrow">CÁLCULO MULTIVARIABLE · LABORATORIO INTERACTIVO</div><h1>La belleza de<br /><em>lo invisible.</em></h1><p className="lead">Aprende el Teorema de la Divergencia viendo cómo la simetría convierte integrales de superficie en integrales de volumen.</p><div className="hero-actions"><button className="primary" onClick={() => go('introduccion')}>Comenzar recorrido <span>→</span></button><button className="ghost" onClick={() => go('visualizador')}>Ver visualizador <span>◌</span></button></div><div className="stats"><div><strong>01</strong><small>Concepto central</small></div><div><strong>05</strong><small>Problemas resueltos</small></div><div><strong>360°</strong><small>Vista del campo</small></div></div></div><div className="hero-art"><div className="orbit o1" /><div className="orbit o2" /><div className="orbit o3" /><div className="charge-glow">∇</div><span className="axis x">x</span><span className="axis y">y</span><span className="axis z">z</span><div className="art-label">CAMPO<br /><b>VECTORIAL</b></div></div></section>
       <section id="introduccion" className="section split"><div><div className="eyebrow">01 — LA PREGUNTA</div><h2>¿Qué nos dice<br /><em>Gauss?</em></h2><div className="info-list"><strong>La idea en cuatro pasos</strong><span>1. Elegimos un volumen V.</span><span>2. Identificamos su frontera cerrada ∂V.</span><span>3. Medimos el flujo que sale por cada punto.</span><span>4. Sumamos la divergencia dentro del volumen.</span></div></div><div className="text-block"><p className="large">La <strong>divergencia</strong> mide cuánto nace o desaparece un campo localmente.</p><p>El teorema conecta esa información volumétrica con el flujo que cruza una frontera cerrada. Es una herramienta de cálculo multivariable, no una afirmación exclusiva de la electrostática.</p><Formula label="Divergencia de un campo vectorial">∇ · F = ∂P/∂x + ∂Q/∂y + ∂R/∂z</Formula><div className="explain-card"><strong>Cómo leerlo</strong><p>Si ∇ · F &gt; 0 predominan las fuentes; si ∇ · F &lt; 0 predominan los sumideros; si ∇ · F = 0 el flujo neto se conserva localmente.</p></div><div className="quote">“El flujo saliente por la superficie es igual a la integral de la divergencia en el volumen.”</div></div></section>

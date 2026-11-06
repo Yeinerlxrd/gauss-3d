@@ -1,0 +1,153 @@
+.math-display {
+  display: inline-block;
+  color: var(--teal);
+  font-family: 'DM Mono', monospace;
+  font-size: clamp(1rem, 1.8vw, 1.35rem);
+  line-height: 1.55;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.math-display sub {
+  font-size: 0.58em;
+  vertical-align: -0.45em;
+  margin-left: 0.08em;
+}
+
+.text-block > .math-display {
+  margin: 8px 0 24px;
+  padding: 14px 18px;
+  border-left: 2px solid var(--teal);
+  background: rgba(48, 212, 190, 0.08);
+}
+
+.cards .math-display {
+  position: absolute;
+  left: 30px;
+  bottom: 26px;
+}
+
+.big-formula .math-display {
+  display: block;
+  color: var(--ink);
+  font-size: clamp(1.7rem, 3.8vw, 3rem);
+  white-space: normal;
+}
+
+.big-formula .math-display sub {
+  font-size: 0.45em;
+}
+
+@media (max-width: 850px) {
+  .math-display {
+    white-space: normal;
+  }
+}
+
+.section-intro {
+  max-width: 720px;
+  margin: -8px 0 42px;
+}
+
+.info-list,
+.visual-guide,
+.compare,
+.warning-note,
+.explain-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-list {
+  margin-top: 40px;
+  max-width: 330px;
+  color: #5d7479;
+  font: 12px/1.5 'DM Mono', monospace;
+}
+
+.info-list strong,
+.visual-guide strong {
+  color: var(--teal);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.explain-card,
+.warning-note {
+  margin: 20px 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(48, 212, 190, .35);
+  background: rgba(48, 212, 190, .08);
+}
+
+.explain-card strong,
+.warning-note strong {
+  color: var(--teal);
+}
+
+.explain-card p,
+.warning-note {
+  margin: 0;
+  font-size: 13px;
+}
+
+.compare {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.compare > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid rgba(38, 70, 91, .2);
+}
+
+.compare strong {
+  color: var(--teal);
+  font: 12px 'DM Mono', monospace;
+  text-transform: uppercase;
+}
+
+.compare span {
+  color: #4f666b;
+  font-size: 13px;
+}
+
+.visual-guide {
+  margin-top: 28px;
+  max-width: 480px;
+  color: #63767d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.app-feature small {
+  display: block;
+  margin-top: 18px;
+  color: #718187;
+  font: 11px/1.5 'DM Mono', monospace;
+}
+
+.dark .section-intro,
+.dark .visual-guide {
+  color: #a4b8bc;
+}
+
+.dark .compare > div {
+  border-color: #29404d;
+}
+
+.dark .compare span {
+  color: #9eb2b7;
+}
+
+@media (max-width: 650px) {
+  .compare {
+    grid-template-columns: 1fr;
+  }
+}
